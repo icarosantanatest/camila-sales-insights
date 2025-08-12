@@ -68,70 +68,58 @@ const baseSample: Omit<SalesData, 'id' | 'data_purchase_approved_date' | 'data_p
   version: '2.0.0',
 };
 
-const products = [
-  'ELA - Guia para a sua versão feminina.',
-];
-
-const paymentTypes: SalesData['data_purchase_payment_type'][] = ['PIX', 'CREDIT_CARD', 'BILLET', 'PAYPAL'];
-
-const states = [
-  { state: 'SP', city: 'São Paulo' },
-  { state: 'RJ', city: 'Rio de Janeiro' },
-  { state: 'MG', city: 'Belo Horizonte' },
-  { state: 'ES', city: 'Vila Velha' },
-  { state: 'BA', city: 'Salvador' },
-  { state: 'PR', city: 'Curitiba' },
-  { state: 'RS', city: 'Porto Alegre' },
-  { state: 'SC', city: 'Florianópolis' },
-  { state: 'PE', city: 'Recife' },
-  { state: 'CE', city: 'Fortaleza' },
-];
-
-const names = [
-  { first: 'Mariana', last: 'Silva' },
-  { first: 'Lucas', last: 'Santos' },
-  { first: 'Beatriz', last: 'Oliveira' },
-  { first: 'Rafael', last: 'Souza' },
-  { first: 'Juliana', last: 'Costa' },
-  { first: 'Felipe', last: 'Pereira' },
-  { first: 'Larissa', last: 'Rodrigues' },
-  { first: 'Gustavo', last: 'Almeida' },
-  { first: 'Camila', last: 'Nunes' },
-  { first: 'Bruno', last: 'Lima' },
-];
-
-const generateRandomData = (count: number): SalesData[] => {
-  const data: SalesData[] = [];
-  const now = new Date();
-
-  for (let i = 0; i < count; i++) {
-    const daysAgo = Math.floor(Math.random() * 90);
-    const purchaseDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
-    const price = (Math.random() * 500 + 50).toFixed(2);
-    const product = products[0]; // Always use the first product
-    const paymentType = paymentTypes[Math.floor(Math.random() * paymentTypes.length)];
-    const location = states[Math.floor(Math.random() * states.length)];
-    const buyerInfo = names[Math.floor(Math.random() * names.length)];
-
-    data.push({
-      ...baseSample,
-      id: `e895cf03-e11d-42cf-9024-d777b15c${1000 + i}`,
-      data_purchase_approved_date: String(purchaseDate.getTime()),
-      data_purchase_price_value: price,
-      data_purchase_full_price_value: price,
-      data_purchase_original_offer_price_value: price,
-      data_product_name: product,
-      data_purchase_payment_type: paymentType,
-      data_buyer_address_state: location.state,
-      data_buyer_address_city: location.city,
-      data_purchase_transaction: `HP374201${6800 + i}`,
-      data_buyer_name: `${buyerInfo.first} ${buyerInfo.last}`,
-      data_buyer_first_name: buyerInfo.first,
-      data_buyer_last_name: buyerInfo.last,
-      data_buyer_email: `${buyerInfo.first.toLowerCase()}.${buyerInfo.last.toLowerCase()}@example.com`,
-    });
+const sampleSales: SalesData[] = [
+  {
+    ...baseSample,
+    id: 'e895cf03-e11d-42cf-9024-d777b15c1000',
+    data_purchase_approved_date: String(new Date(new Date().setDate(new Date().getDate() - 5)).getTime()),
+    data_purchase_price_value: '297.00',
+    data_purchase_full_price_value: '297.00',
+    data_purchase_original_offer_price_value: '297.00',
+    data_product_name: 'ELA - Guia para a sua versão feminina.',
+    data_purchase_payment_type: 'CREDIT_CARD',
+    data_buyer_address_state: 'SP',
+    data_buyer_address_city: 'São Paulo',
+    data_purchase_transaction: 'HP3742016800',
+    data_buyer_name: 'Mariana Silva',
+    data_buyer_first_name: 'Mariana',
+    data_buyer_last_name: 'Silva',
+    data_buyer_email: 'mariana.silva@example.com',
+  },
+  {
+    ...baseSample,
+    id: 'e895cf03-e11d-42cf-9024-d777b15c1001',
+    data_purchase_approved_date: String(new Date(new Date().setDate(new Date().getDate() - 15)).getTime()),
+    data_purchase_price_value: '497.00',
+    data_purchase_full_price_value: '497.00',
+    data_purchase_original_offer_price_value: '497.00',
+    data_product_name: 'ELA - Guia para a sua versão feminina.',
+    data_purchase_payment_type: 'PIX',
+    data_buyer_address_state: 'RJ',
+    data_buyer_address_city: 'Rio de Janeiro',
+    data_purchase_transaction: 'HP3742016801',
+    data_buyer_name: 'Lucas Santos',
+    data_buyer_first_name: 'Lucas',
+    data_buyer_last_name: 'Santos',
+    data_buyer_email: 'lucas.santos@example.com',
+  },
+  {
+    ...baseSample,
+    id: 'e895cf03-e11d-42cf-9024-d777b15c1002',
+    data_purchase_approved_date: String(new Date(new Date().setDate(new Date().getDate() - 30)).getTime()),
+    data_purchase_price_value: '297.00',
+    data_purchase_full_price_value: '297.00',
+    data_purchase_original_offer_price_value: '297.00',
+    data_product_name: 'ELA - Guia para a sua versão feminina.',
+    data_purchase_payment_type: 'BILLET',
+    data_buyer_address_state: 'MG',
+    data_buyer_address_city: 'Belo Horizonte',
+    data_purchase_transaction: 'HP3742016802',
+    data_buyer_name: 'Beatriz Oliveira',
+    data_buyer_first_name: 'Beatriz',
+    data_buyer_last_name: 'Oliveira',
+    data_buyer_email: 'beatriz.oliveira@example.com',
   }
-  return data;
-};
+];
 
-export const salesData: SalesData[] = generateRandomData(50);
+export const salesData: SalesData[] = sampleSales;

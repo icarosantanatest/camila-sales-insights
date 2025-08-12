@@ -19,7 +19,7 @@ type Props = {
 
 export default function Dashboard({ data }: Props) {
   const [dateRange, setDateRange] = useState<DateRange>({
-    from: subDays(new Date(), 29),
+    from: subDays(new Date(), 89),
     to: new Date(),
   });
   const [selectedProduct, setSelectedProduct] = useState<string>('all');
