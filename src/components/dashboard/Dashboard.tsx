@@ -12,7 +12,6 @@ import RevenueChart from './RevenueChart';
 import ProductSalesChart from './ProductSalesChart';
 import PaymentMethodChart from './PaymentMethodChart';
 import RecentSalesTable from './RecentSalesTable';
-import AiInsights from './AiInsights';
 import { formatCurrencyBRL } from '@/lib/helpers';
 
 type Props = {
@@ -81,10 +80,6 @@ export default function Dashboard({ data }: Props) {
           <RevenueChart data={filteredData} />
           <ProductSalesChart data={filteredData} />
           <PaymentMethodChart data={filteredData} />
-        </div>
-
-        <div>
-           <AiInsights filteredData={filteredData} />
         </div>
 
         <div className="mt-4">
