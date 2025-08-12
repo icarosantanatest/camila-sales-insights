@@ -2,15 +2,18 @@
 
 import React, { useState, useMemo } from 'react';
 import type { SalesData, DateRange } from '@/lib/types';
-import { startOfDay, endOfDay, startOfMonth, endOfMonth } from 'date-fns';
-import { BarChartBig, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
+import { startOfMonth, endOfMonth } from 'date-fns';
+import { BarChartBig, DollarSign, ShoppingCart, TrendingUp, RefreshCw } from 'lucide-react';
 import { parse } from 'date-fns';
 
 import DashboardFilters from './DashboardFilters';
 import KpiCard from './KpiCard';
 import RevenueChart from './RevenueChart';
 import RecentSalesTable from './RecentSalesTable';
+import ProductSalesChart from './ProductSalesChart';
+import PaymentMethodChart from './PaymentMethodChart';
 import { formatCurrencyBRL } from '@/lib/helpers';
+import { Button } from '@/components/ui/button';
 
 type Props = {
   data: SalesData[];
@@ -31,11 +34,10 @@ export default function Dashboard({ data }: Props) {
   const filteredData = useMemo(() => {
     const validStatuses = ['APPROVED', 'COMPLETED'];
     return data.filter(item => {
-      // Use timestamp_incoming_webhook for date filtering
       const incomingDate = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date());
       const isDateInRange = 
-        (!dateRange.from || incomingDate >= startOfDay(dateRange.from)) &&
-        (!dateRange.to || incomingDate <= endOfDay(dateRange.to));
+        (!dateRange.from || incomingDate >= dateRange.from) &&
+        (!dateRange.to || incomingDate <= dateRange.to);
       
       const isProductMatch = selectedProduct === 'all' || item.data_product_name === selectedProduct;
       
@@ -50,6 +52,10 @@ export default function Dashboard({ data }: Props) {
     return { totalRevenue, totalSales: salesCount, averageTicket };
   }, [filteredData]);
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
@@ -57,7 +63,7 @@ export default function Dashboard({ data }: Props) {
             <BarChartBig className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-semibold text-foreground">Camila Sales Insights</h1>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
             <DashboardFilters
                 dateRange={dateRange}
                 setDateRange={setDateRange}
@@ -65,6 +71,10 @@ export default function Dashboard({ data }: Props) {
                 setSelectedProduct={setSelectedProduct}
                 products={uniqueProducts}
             />
+            <Button variant="outline" size="icon" onClick={handleRefresh}>
+              <RefreshCw className="h-4 w-4" />
+              <span className="sr-only">Atualizar Relatório</span>
+            </Button>
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -74,6 +84,11 @@ export default function Dashboard({ data }: Props) {
             <KpiCard title="Ticket Médio" value={formatCurrencyBRL(averageTicket)} icon={TrendingUp} />
         </div>
         
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
+          <ProductSalesChart data={filteredData} />
+          <PaymentMethodChart data={filteredData} />
+        </div>
+
         <div className="grid grid-cols-1 gap-4 md:gap-8">
           <RevenueChart data={filteredData} />
         </div>
