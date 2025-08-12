@@ -45,7 +45,7 @@ export default function Dashboard({ data }: Props) {
 
   const { totalRevenue, totalSales, averageTicket } = useMemo(() => {
     const completedSales = filteredData;
-    const totalRevenue = completedSales.reduce((sum, item) => sum + parseFloat(item.data_purchase_price_value), 0);
+    const totalRevenue = completedSales.reduce((sum, item) => sum + parseFloat(item.data_purchase_full_price_value), 0);
     const totalSales = completedSales.length;
     const averageTicket = totalSales > 0 ? totalRevenue / totalSales : 0;
     return { totalRevenue, totalSales, averageTicket };

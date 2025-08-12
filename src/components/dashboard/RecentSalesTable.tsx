@@ -51,7 +51,7 @@ export default function RecentSalesTable({ data }: Props) {
                 <TableCell className="hidden sm:table-cell">
                   <Badge variant="outline">{sale.data_purchase_payment_type}</Badge>
                 </TableCell>
-                <TableCell className="text-right">{formatCurrencyBRL(sale.data_purchase_price_value)}</TableCell>
+                <TableCell className="text-right">{formatCurrencyBRL(sale.data_purchase_full_price_value)}</TableCell>
               </TableRow>
             ))}
              {recentSales.length === 0 && (
