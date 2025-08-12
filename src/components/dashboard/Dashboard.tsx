@@ -9,10 +9,8 @@ import DashboardFilters from './DashboardFilters';
 import KpiCard from './KpiCard';
 import RevenueChart from './RevenueChart';
 import ProductSalesChart from './ProductSalesChart';
-import GeoChart from './GeoChart';
 import PaymentMethodChart from './PaymentMethodChart';
 import RecentSalesTable from './RecentSalesTable';
-import AiInsights from './AiInsights';
 import { formatCurrencyBRL } from '@/lib/helpers';
 
 type Props = {
@@ -79,12 +77,7 @@ export default function Dashboard({ data }: Props) {
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
           <RevenueChart data={filteredData} />
           <ProductSalesChart data={filteredData} />
-          <GeoChart data={filteredData} />
           <PaymentMethodChart data={filteredData} />
-        </div>
-
-        <div>
-            <AiInsights filteredData={filteredData} />
         </div>
 
         <div>
