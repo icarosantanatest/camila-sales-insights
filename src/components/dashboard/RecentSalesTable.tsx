@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import type { SalesData } from '@/lib/types'
 import { formatCurrencyBRL } from '@/lib/helpers'
 import { Badge } from "@/components/ui/badge"
+import { parse } from 'date-fns'
 
 type Props = {
   data: SalesData[];
@@ -19,7 +20,11 @@ type Props = {
 
 export default function RecentSalesTable({ data }: Props) {
   const recentSales = data
-    .sort((a, b) => Number(b.data_purchase_approved_date) - Number(a.data_purchase_approved_date))
+    .sort((a, b) => {
+        const dateA = parse(a.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).getTime();
+        const dateB = parse(b.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).getTime();
+        return dateB - dateA;
+    })
     .slice(0, 10);
 
   return (

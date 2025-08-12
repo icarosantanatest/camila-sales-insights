@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import type { SalesData, DateRange } from '@/lib/types';
 import { subDays, startOfDay, endOfDay } from 'date-fns';
 import { BarChartBig, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
+import { parse } from 'date-fns';
 
 import DashboardFilters from './DashboardFilters';
 import KpiCard from './KpiCard';
@@ -11,6 +12,7 @@ import RevenueChart from './RevenueChart';
 import ProductSalesChart from './ProductSalesChart';
 import PaymentMethodChart from './PaymentMethodChart';
 import RecentSalesTable from './RecentSalesTable';
+import AiInsights from './AiInsights';
 import { formatCurrencyBRL } from '@/lib/helpers';
 
 type Props = {
@@ -32,10 +34,11 @@ export default function Dashboard({ data }: Props) {
   const filteredData = useMemo(() => {
     const validStatuses = ['COMPLETED'];
     return data.filter(item => {
-      const approvedDate = new Date(Number(item.data_purchase_approved_date));
+      // Use timestamp_incoming_webhook for date filtering
+      const incomingDate = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date());
       const isDateInRange = 
-        (!dateRange.from || approvedDate >= startOfDay(dateRange.from)) &&
-        (!dateRange.to || approvedDate <= endOfDay(dateRange.to));
+        (!dateRange.from || incomingDate >= startOfDay(dateRange.from)) &&
+        (!dateRange.to || incomingDate <= endOfDay(dateRange.to));
       
       const isProductMatch = selectedProduct === 'all' || item.data_product_name === selectedProduct;
       
@@ -81,6 +84,10 @@ export default function Dashboard({ data }: Props) {
         </div>
 
         <div>
+           <AiInsights filteredData={filteredData} />
+        </div>
+
+        <div className="mt-4">
           <RecentSalesTable data={filteredData} />
         </div>
       </main>

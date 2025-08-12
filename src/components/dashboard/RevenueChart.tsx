@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import type { SalesData } from '@/lib/types';
 import { formatCurrencyBRL, formatShortDate } from '@/lib/helpers';
+import { parse } from 'date-fns';
 
 type Props = {
   data: SalesData[];
@@ -16,7 +17,7 @@ export default function RevenueChart({ data }: Props) {
     const dailyRevenue: { [key: string]: number } = {};
 
     data.forEach(item => {
-      const date = new Date(Number(item.data_purchase_approved_date)).toISOString().split('T')[0];
+      const date = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).toISOString().split('T')[0];
       const price = parseFloat(item.data_purchase_original_offer_price_value);
       if (!dailyRevenue[date]) {
         dailyRevenue[date] = 0;

@@ -1,7 +1,16 @@
 import type { SalesData } from './types';
+import { format } from 'date-fns';
 
-const baseSample: Omit<SalesData, 'id' | 'data_purchase_approved_date' | 'data_purchase_price_value' | 'data_product_name' | 'data_purchase_payment_type' | 'data_buyer_address_state' | 'data_buyer_address_city' | 'data_purchase_transaction' | 'data_buyer_name' | 'data_buyer_email'> = {
-  timestamp_incoming_webhook: '12/08/2025 09:01:14',
+const generateRandomDate = (start: Date, end: Date): string => {
+  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return format(date, 'dd/MM/yyyy HH:mm:ss');
+};
+
+const startDate = new Date();
+startDate.setDate(startDate.getDate() - 89);
+const endDate = new Date();
+
+const baseSample: Omit<SalesData, 'id' | 'timestamp_incoming_webhook' | 'data_purchase_approved_date' | 'data_purchase_price_value' | 'data_product_name' | 'data_purchase_payment_type' | 'data_buyer_address_state' | 'data_buyer_address_city' | 'data_purchase_transaction' | 'data_buyer_name' | 'data_buyer_email'> = {
   data_product_support_email: '',
   data_product_has_co_production: '',
   data_product_warranty_date: '2025-08-11T00:00:00Z',
@@ -72,7 +81,8 @@ const sampleSales: SalesData[] = [
   {
     ...baseSample,
     id: 'e895cf03-e11d-42cf-9024-d777b15c1000',
-    data_purchase_approved_date: String(new Date(new Date().setDate(new Date().getDate() - 5)).getTime()),
+    timestamp_incoming_webhook: generateRandomDate(startDate, endDate),
+    data_purchase_approved_date: String(new Date().getTime()),
     data_purchase_price_value: '297.00',
     data_purchase_full_price_value: '297.00',
     data_purchase_original_offer_price_value: '297.00',
@@ -89,7 +99,8 @@ const sampleSales: SalesData[] = [
   {
     ...baseSample,
     id: 'e895cf03-e11d-42cf-9024-d777b15c1001',
-    data_purchase_approved_date: String(new Date(new Date().setDate(new Date().getDate() - 15)).getTime()),
+    timestamp_incoming_webhook: generateRandomDate(startDate, endDate),
+    data_purchase_approved_date: String(new Date().getTime()),
     data_purchase_price_value: '497.00',
     data_purchase_full_price_value: '497.00',
     data_purchase_original_offer_price_value: '497.00',
@@ -106,7 +117,8 @@ const sampleSales: SalesData[] = [
   {
     ...baseSample,
     id: 'e895cf03-e11d-42cf-9024-d777b15c1002',
-    data_purchase_approved_date: String(new Date(new Date().setDate(new Date().getDate() - 30)).getTime()),
+    timestamp_incoming_webhook: generateRandomDate(startDate, endDate),
+    data_purchase_approved_date: String(new Date().getTime()),
     data_purchase_price_value: '297.00',
     data_purchase_full_price_value: '297.00',
     data_purchase_original_offer_price_value: '297.00',
