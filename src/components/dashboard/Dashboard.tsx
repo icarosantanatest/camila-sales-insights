@@ -31,6 +31,7 @@ export default function Dashboard({ data }: Props) {
   }, [data]);
 
   const filteredData = useMemo(() => {
+    const validStatuses = ['COMPLETED', 'BILLET_PRINTED', 'WAITING_PAYMENT'];
     return data.filter(item => {
       const approvedDate = new Date(Number(item.data_purchase_approved_date));
       const isDateInRange = 
@@ -39,17 +40,20 @@ export default function Dashboard({ data }: Props) {
       
       const isProductMatch = selectedProduct === 'all' || item.data_product_name === selectedProduct;
       
-      return item.data_purchase_status === 'COMPLETED' && isDateInRange && isProductMatch;
+      return validStatuses.includes(item.data_purchase_status) && isDateInRange && isProductMatch;
     });
   }, [data, dateRange, selectedProduct]);
+  
+  const completedSalesData = useMemo(() => {
+    return filteredData.filter(item => item.data_purchase_status === 'COMPLETED');
+  }, [filteredData]);
 
   const { totalRevenue, totalSales, averageTicket } = useMemo(() => {
-    const completedSales = filteredData;
-    const totalRevenue = completedSales.reduce((sum, item) => sum + parseFloat(item.data_purchase_full_price_value), 0);
-    const totalSales = completedSales.length;
-    const averageTicket = totalSales > 0 ? totalRevenue / totalSales : 0;
-    return { totalRevenue, totalSales, averageTicket };
-  }, [filteredData]);
+    const totalRevenue = completedSalesData.reduce((sum, item) => sum + parseFloat(item.data_purchase_full_price_value), 0);
+    const completedSalesCount = completedSalesData.length;
+    const averageTicket = completedSalesCount > 0 ? totalRevenue / completedSalesCount : 0;
+    return { totalRevenue, totalSales: filteredData.length, averageTicket };
+  }, [filteredData, completedSalesData]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -76,8 +80,8 @@ export default function Dashboard({ data }: Props) {
         </div>
         
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
-          <RevenueChart data={filteredData} />
-          <ProductSalesChart data={filteredData} />
+          <RevenueChart data={completedSalesData} />
+          <ProductSalesChart data={completedSalesData} />
           <GeoChart data={filteredData} />
           <PaymentMethodChart data={filteredData} />
         </div>

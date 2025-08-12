@@ -43,7 +43,7 @@ export type SalesData = {
   data_purchase_full_price_value: string;
   data_purchase_business_model: string;
   data_purchase_transaction: string;
-  data_purchase_status: 'COMPLETED' | 'CANCELLED' | 'REFUNDED' | 'DISPUTE' | 'BLOCKED' | 'PARTIAL_REFUNDED';
+  data_purchase_status: 'COMPLETED' | 'CANCELLED' | 'REFUNDED' | 'DISPUTE' | 'BLOCKED' | 'PARTIAL_REFUNDED' | 'BILLET_PRINTED' | 'WAITING_PAYMENT';
   data_affiliates_0_affiliate_code: string;
   data_affiliates_0_name: string;
   data_producer_legal_nature: string;
