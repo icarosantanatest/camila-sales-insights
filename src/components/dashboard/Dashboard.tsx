@@ -71,8 +71,8 @@ export default function Dashboard({ data }: Props) {
                 setSelectedProduct={setSelectedProduct}
                 products={uniqueProducts}
             />
-            <Button variant="outline" size="icon" onClick={handleRefresh}>
-              <RefreshCw className="h-4 w-4" />
+            <Button variant="outline" size="icon" onClick={handleRefresh} className="group">
+              <RefreshCw className="h-4 w-4 group-hover:animate-spin" />
               <span className="sr-only">Atualizar Relatório</span>
             </Button>
         </div>
