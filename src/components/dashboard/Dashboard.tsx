@@ -12,6 +12,7 @@ import ProductSalesChart from './ProductSalesChart';
 import GeoChart from './GeoChart';
 import PaymentMethodChart from './PaymentMethodChart';
 import RecentSalesTable from './RecentSalesTable';
+import AiInsights from './AiInsights';
 import { formatCurrencyBRL } from '@/lib/helpers';
 
 type Props = {
@@ -31,7 +32,7 @@ export default function Dashboard({ data }: Props) {
   }, [data]);
 
   const filteredData = useMemo(() => {
-    const validStatuses = ['COMPLETED', 'BILLET_PRINTED', 'WAITING_PAYMENT'];
+    const validStatuses = ['COMPLETED'];
     return data.filter(item => {
       const approvedDate = new Date(Number(item.data_purchase_approved_date));
       const isDateInRange = 
@@ -44,16 +45,12 @@ export default function Dashboard({ data }: Props) {
     });
   }, [data, dateRange, selectedProduct]);
   
-  const completedSalesData = useMemo(() => {
-    return filteredData.filter(item => item.data_purchase_status === 'COMPLETED');
-  }, [filteredData]);
-
   const { totalRevenue, totalSales, averageTicket } = useMemo(() => {
-    const totalRevenue = completedSalesData.reduce((sum, item) => sum + parseFloat(item.data_purchase_full_price_value), 0);
-    const completedSalesCount = completedSalesData.length;
-    const averageTicket = completedSalesCount > 0 ? totalRevenue / completedSalesCount : 0;
-    return { totalRevenue, totalSales: filteredData.length, averageTicket };
-  }, [filteredData, completedSalesData]);
+    const totalRevenue = filteredData.reduce((sum, item) => sum + parseFloat(item.data_purchase_full_price_value), 0);
+    const salesCount = filteredData.length;
+    const averageTicket = salesCount > 0 ? totalRevenue / salesCount : 0;
+    return { totalRevenue, totalSales: salesCount, averageTicket };
+  }, [filteredData]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -80,10 +77,14 @@ export default function Dashboard({ data }: Props) {
         </div>
         
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
-          <RevenueChart data={completedSalesData} />
-          <ProductSalesChart data={completedSalesData} />
+          <RevenueChart data={filteredData} />
+          <ProductSalesChart data={filteredData} />
           <GeoChart data={filteredData} />
           <PaymentMethodChart data={filteredData} />
+        </div>
+
+        <div>
+            <AiInsights filteredData={filteredData} />
         </div>
 
         <div>
