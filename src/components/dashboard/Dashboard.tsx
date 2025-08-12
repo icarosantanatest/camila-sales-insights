@@ -9,8 +9,6 @@ import { parse } from 'date-fns';
 import DashboardFilters from './DashboardFilters';
 import KpiCard from './KpiCard';
 import RevenueChart from './RevenueChart';
-import ProductSalesChart from './ProductSalesChart';
-import PaymentMethodChart from './PaymentMethodChart';
 import RecentSalesTable from './RecentSalesTable';
 import { formatCurrencyBRL } from '@/lib/helpers';
 
@@ -31,7 +29,7 @@ export default function Dashboard({ data }: Props) {
   }, [data]);
 
   const filteredData = useMemo(() => {
-    const validStatuses = ['COMPLETED', 'APPROVED'];
+    const validStatuses = ['APPROVED', 'COMPLETED'];
     return data.filter(item => {
       // Use timestamp_incoming_webhook for date filtering
       const incomingDate = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date());
@@ -76,13 +74,11 @@ export default function Dashboard({ data }: Props) {
             <KpiCard title="Ticket Médio" value={formatCurrencyBRL(averageTicket)} icon={TrendingUp} />
         </div>
         
-        <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:gap-8">
           <RevenueChart data={filteredData} />
-          <ProductSalesChart data={filteredData} />
-          <PaymentMethodChart data={filteredData} />
         </div>
 
-        <div className="mt-4">
+        <div className="grid grid-cols-1 gap-4 md:gap-8">
           <RecentSalesTable data={filteredData} />
         </div>
       </main>

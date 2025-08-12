@@ -1,5 +1,5 @@
 export const formatCurrencyBRL = (value: number | string) => {
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+  const numericValue = typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
   if (isNaN(numericValue)) {
     return 'R$ 0,00';
   }
@@ -9,10 +9,10 @@ export const formatCurrencyBRL = (value: number | string) => {
   }).format(numericValue);
 };
 
-export const formatShortDate = (timestamp: string | number) => {
-    const date = new Date(Number(timestamp));
+export const formatShortDate = (date: Date) => {
     return new Intl.DateTimeFormat('pt-BR', {
         day: '2-digit',
         month: '2-digit',
+        timeZone: 'UTC', // Use UTC to avoid timezone shifts
     }).format(date);
 }

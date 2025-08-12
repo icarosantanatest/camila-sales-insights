@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import type { SalesData } from '@/lib/types';
 import { formatCurrencyBRL, formatShortDate } from '@/lib/helpers';
-import { parse } from 'date-fns';
+import { parse, startOfDay } from 'date-fns';
 
 type Props = {
   data: SalesData[];
@@ -17,18 +17,18 @@ export default function RevenueChart({ data }: Props) {
     const dailyRevenue: { [key: string]: number } = {};
 
     data.forEach(item => {
-      const date = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).toISOString().split('T')[0];
-      const price = parseFloat(item.data_purchase_original_offer_price_value);
-      if (!dailyRevenue[date]) {
-        dailyRevenue[date] = 0;
+      const dateKey = startOfDay(parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date())).toISOString();
+      const price = parseFloat(item.data_purchase_original_offer_price_value.replace(',', '.'));
+      if (!dailyRevenue[dateKey]) {
+        dailyRevenue[dateKey] = 0;
       }
-      dailyRevenue[date] += price;
+      dailyRevenue[dateKey] += price;
     });
 
     return Object.keys(dailyRevenue)
       .map(date => ({
         date: new Date(date).getTime(),
-        displayDate: formatShortDate(new Date(date).getTime()),
+        displayDate: formatShortDate(new Date(date)),
         Receita: dailyRevenue[date],
       }))
       .sort((a, b) => a.date - b.date);
