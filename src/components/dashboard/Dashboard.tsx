@@ -12,7 +12,6 @@ import ProductSalesChart from './ProductSalesChart';
 import GeoChart from './GeoChart';
 import PaymentMethodChart from './PaymentMethodChart';
 import RecentSalesTable from './RecentSalesTable';
-import AiInsights from './AiInsights';
 import { formatCurrencyBRL } from '@/lib/helpers';
 
 type Props = {
@@ -76,12 +75,6 @@ export default function Dashboard({ data }: Props) {
             <KpiCard title="Ticket Médio" value={formatCurrencyBRL(averageTicket)} icon={TrendingUp} />
         </div>
         
-        <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-          <div className="xl:col-span-3">
-             <AiInsights filteredData={filteredData} />
-          </div>
-        </div>
-
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
           <RevenueChart data={filteredData} />
           <ProductSalesChart data={filteredData} />
