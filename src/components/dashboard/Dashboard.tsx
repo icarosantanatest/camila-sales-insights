@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import type { SalesData, DateRange } from '@/lib/types';
-import { subDays, startOfDay, endOfDay } from 'date-fns';
+import { startOfDay, endOfDay, startOfMonth, endOfMonth } from 'date-fns';
 import { BarChartBig, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
 import { parse } from 'date-fns';
 
@@ -20,8 +20,8 @@ type Props = {
 
 export default function Dashboard({ data }: Props) {
   const [dateRange, setDateRange] = useState<DateRange>({
-    from: subDays(new Date(), 89),
-    to: new Date(),
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date()),
   });
   const [selectedProduct, setSelectedProduct] = useState<string>('all');
   
@@ -46,7 +46,7 @@ export default function Dashboard({ data }: Props) {
   }, [data, dateRange, selectedProduct]);
   
   const { totalRevenue, totalSales, averageTicket } = useMemo(() => {
-    const totalRevenue = filteredData.reduce((sum, item) => sum + parseFloat(item.data_purchase_original_offer_price_value), 0);
+    const totalRevenue = filteredData.reduce((sum, item) => sum + parseFloat(item.data_purchase_original_offer_price_value.replace(',', '.')), 0);
     const salesCount = filteredData.length;
     const averageTicket = salesCount > 0 ? totalRevenue / salesCount : 0;
     return { totalRevenue, totalSales: salesCount, averageTicket };
@@ -89,5 +89,3 @@ export default function Dashboard({ data }: Props) {
     </div>
   );
 }
-
-    
