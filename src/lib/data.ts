@@ -70,9 +70,6 @@ const baseSample: Omit<SalesData, 'id' | 'data_purchase_approved_date' | 'data_p
 
 const products = [
   'ELA - Guia para a sua versão feminina.',
-  'Fórmula do Lançamento Digital',
-  'Curso de Marketing Avançado',
-  'Investidor Inteligente Pro',
 ];
 
 const paymentTypes: SalesData['data_purchase_payment_type'][] = ['PIX', 'CREDIT_CARD', 'BILLET', 'PAYPAL'];
@@ -111,7 +108,7 @@ const generateRandomData = (count: number): SalesData[] => {
     const daysAgo = Math.floor(Math.random() * 90);
     const purchaseDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
     const price = (Math.random() * 500 + 50).toFixed(2);
-    const product = products[Math.floor(Math.random() * products.length)];
+    const product = products[0]; // Always use the first product
     const paymentType = paymentTypes[Math.floor(Math.random() * paymentTypes.length)];
     const location = states[Math.floor(Math.random() * states.length)];
     const buyerInfo = names[Math.floor(Math.random() * names.length)];
