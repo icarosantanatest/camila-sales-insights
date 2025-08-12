@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Hotmart Sales Insights',
+  title: 'Camila Sales Insights',
   description: 'Seu dashboard analítico para a Hotmart.',
 };
 
