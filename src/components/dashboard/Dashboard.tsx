@@ -31,7 +31,7 @@ export default function Dashboard({ data }: Props) {
   }, [data]);
 
   const filteredData = useMemo(() => {
-    const validStatuses = ['COMPLETED'];
+    const validStatuses = ['COMPLETED', 'APPROVED'];
     return data.filter(item => {
       // Use timestamp_incoming_webhook for date filtering
       const incomingDate = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date());
@@ -89,3 +89,5 @@ export default function Dashboard({ data }: Props) {
     </div>
   );
 }
+
+    
