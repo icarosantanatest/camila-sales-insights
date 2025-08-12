@@ -11,7 +11,7 @@ export async function getAiInsights(data: SalesData[]) {
   }
   try {
     const relevantData = data.map(item => ({
-        valor: item.data_purchase_full_price_value,
+        valor: item.data_purchase_original_offer_price_value,
         produto: item.data_product_name,
         data: new Date(Number(item.data_purchase_approved_date)).toLocaleDateString(),
         pagamento: item.data_purchase_payment_type,

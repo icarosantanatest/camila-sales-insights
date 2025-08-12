@@ -17,7 +17,7 @@ export default function ProductSalesChart({ data }: Props) {
 
     data.forEach(item => {
       const productName = item.data_product_name;
-      const price = parseFloat(item.data_purchase_full_price_value);
+      const price = parseFloat(item.data_purchase_original_offer_price_value);
       if (!productRevenue[productName]) {
         productRevenue[productName] = 0;
       }

@@ -17,7 +17,7 @@ export default function RevenueChart({ data }: Props) {
 
     data.forEach(item => {
       const date = new Date(Number(item.data_purchase_approved_date)).toISOString().split('T')[0];
-      const price = parseFloat(item.data_purchase_full_price_value);
+      const price = parseFloat(item.data_purchase_original_offer_price_value);
       if (!dailyRevenue[date]) {
         dailyRevenue[date] = 0;
       }
