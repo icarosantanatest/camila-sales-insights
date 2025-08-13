@@ -17,12 +17,16 @@ export default function RevenueChart({ data }: Props) {
     const dailyRevenue: { [key: string]: number } = {};
 
     data.forEach(item => {
-      const dateKey = startOfDay(parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date())).toISOString();
-      const price = parseFloat(item.data_purchase_original_offer_price_value.replace(',', '.'));
-      if (!dailyRevenue[dateKey]) {
-        dailyRevenue[dateKey] = 0;
+      try {
+        const dateKey = startOfDay(parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date())).toISOString();
+        const price = parseFloat(item.data_purchase_original_offer_price_value.replace(',', '.'));
+        if (!dailyRevenue[dateKey]) {
+          dailyRevenue[dateKey] = 0;
+        }
+        dailyRevenue[dateKey] += price;
+      } catch (e) {
+        // Ignore rows with invalid dates
       }
-      dailyRevenue[dateKey] += price;
     });
 
     return Object.keys(dailyRevenue)
@@ -52,12 +56,7 @@ export default function RevenueChart({ data }: Props) {
           <LineChart data={chartData}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis dataKey="displayDate" tickLine={false} axisLine={false} tickMargin={8} />
-            <YAxis
-              tickFormatter={(value) => formatCurrencyBRL(value).replace('R$', '')}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-            />
+            <YAxis hide={true} />
             <Tooltip
               cursor={false}
               content={<ChartTooltipContent
