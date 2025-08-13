@@ -34,14 +34,23 @@ export default function Dashboard({ data }: Props) {
   const filteredData = useMemo(() => {
     const validStatuses = ['APPROVED', 'COMPLETED'];
     return data.filter(item => {
-      const incomingDate = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date());
-      const isDateInRange = 
-        (!dateRange.from || incomingDate >= dateRange.from) &&
-        (!dateRange.to || incomingDate <= dateRange.to);
-      
-      const isProductMatch = selectedProduct === 'all' || item.data_product_name === selectedProduct;
-      
-      return validStatuses.includes(item.data_purchase_status) && isDateInRange && isProductMatch;
+      if (!item.timestamp_incoming_webhook) {
+        return false;
+      }
+      try {
+        const incomingDate = parse(item.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date());
+        
+        const isDateInRange = 
+          (!dateRange.from || incomingDate >= dateRange.from) &&
+          (!dateRange.to || incomingDate <= dateRange.to);
+        
+        const isProductMatch = selectedProduct === 'all' || item.data_product_name === selectedProduct;
+        
+        return validStatuses.includes(item.data_purchase_status) && isDateInRange && isProductMatch;
+      } catch (error) {
+        console.error("Error parsing date:", item.timestamp_incoming_webhook);
+        return false;
+      }
     });
   }, [data, dateRange, selectedProduct]);
   
