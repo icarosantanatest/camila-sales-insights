@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import type { SalesData, DateRange } from '@/lib/types';
 import { startOfMonth, endOfMonth } from 'date-fns';
-import { BarChartBig, DollarSign, ShoppingCart, TrendingUp, RefreshCw } from 'lucide-react';
+import { BarChartBig, DollarSign, ShoppingCart, TrendingUp, RefreshCw, AlertCircle } from 'lucide-react';
 import { parse } from 'date-fns';
 
 import DashboardFilters from './DashboardFilters';
@@ -32,7 +32,6 @@ export default function Dashboard({ data }: Props) {
   }, [data]);
 
   const filteredData = useMemo(() => {
-    const validStatuses = ['APPROVED', 'COMPLETED'];
     return data.filter(item => {
       if (!item.timestamp_incoming_webhook) {
         return false;
@@ -46,7 +45,7 @@ export default function Dashboard({ data }: Props) {
         
         const isProductMatch = selectedProduct === 'all' || item.data_product_name === selectedProduct;
         
-        return validStatuses.includes(item.data_purchase_status) && isDateInRange && isProductMatch;
+        return isDateInRange && isProductMatch;
       } catch (error) {
         console.error("Error parsing date:", item.timestamp_incoming_webhook);
         return false;
@@ -54,11 +53,46 @@ export default function Dashboard({ data }: Props) {
     });
   }, [data, dateRange, selectedProduct]);
   
-  const { totalRevenue, totalSales, averageTicket } = useMemo(() => {
-    const totalRevenue = filteredData.reduce((sum, item) => sum + parseFloat(item.data_purchase_original_offer_price_value.replace(',', '.')), 0);
-    const salesCount = filteredData.length;
-    const averageTicket = salesCount > 0 ? totalRevenue / salesCount : 0;
-    return { totalRevenue, totalSales: salesCount, averageTicket };
+  const { 
+    totalRevenue,
+    netRevenue,
+    totalSales,
+    totalRefundAmount,
+    totalRefundCount
+  } = useMemo(() => {
+    let totalRevenue = 0;
+    let netRevenue = 0;
+    let totalSales = 0;
+    let totalRefundAmount = 0;
+    let totalRefundCount = 0;
+
+    const approvedData = filteredData.filter(item => 
+      ['APPROVED', 'COMPLETED'].includes(item.data_purchase_status)
+    );
+
+    approvedData.forEach(item => {
+      totalRevenue += parseFloat(item.data_purchase_full_price_value.replace(',', '.')) || 0;
+      netRevenue += parseFloat(item.data_commissions_1_value.replace(',', '.')) || 0;
+      totalSales++;
+    });
+    
+    const refundedEvents = filteredData.filter(item => item.event === 'PURCHASE_REFUNDED');
+    refundedEvents.forEach(item => {
+      totalRefundAmount += parseFloat(item.data_purchase_full_price_value.replace(',', '.')) || 0;
+      totalRefundCount++;
+    });
+
+    return { 
+      totalRevenue, 
+      netRevenue, 
+      totalSales, 
+      totalRefundAmount,
+      totalRefundCount 
+    };
+  }, [filteredData]);
+
+  const salesEvents = useMemo(() => {
+      return filteredData.filter(item => ['APPROVED', 'COMPLETED'].includes(item.data_purchase_status));
   }, [filteredData]);
 
   const handleRefresh = () => {
@@ -87,23 +121,24 @@ export default function Dashboard({ data }: Props) {
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
             <KpiCard title="Receita Total" value={formatCurrencyBRL(totalRevenue)} icon={DollarSign} />
+            <KpiCard title="Receita Líquida" value={formatCurrencyBRL(netRevenue)} icon={TrendingUp} />
             <KpiCard title="Total de Vendas" value={totalSales.toString()} icon={ShoppingCart} />
-            <KpiCard title="Ticket Médio" value={formatCurrencyBRL(averageTicket)} icon={TrendingUp} />
+            <KpiCard title="Total de Reembolso" value={formatCurrencyBRL(totalRefundAmount)} icon={AlertCircle} description={`${totalRefundCount} reembolsos`} />
         </div>
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
-          <ProductSalesChart data={filteredData} />
-          <PaymentMethodChart data={filteredData} />
+          <ProductSalesChart data={salesEvents} />
+          <PaymentMethodChart data={salesEvents} />
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:gap-8">
-          <RevenueChart data={filteredData} />
+          <RevenueChart data={salesEvents} />
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:gap-8">
-          <RecentSalesTable data={filteredData} />
+          <RecentSalesTable data={salesEvents} />
         </div>
       </main>
     </div>

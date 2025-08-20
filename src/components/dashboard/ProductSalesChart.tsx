@@ -13,21 +13,23 @@ type Props = {
 
 export default function ProductSalesChart({ data }: Props) {
   const chartData = useMemo(() => {
-    const productRevenue: { [key: string]: number } = {};
+    const productStats: { [key: string]: { revenue: number, count: number } } = {};
 
     data.forEach(item => {
       const productName = item.data_product_name;
       const price = parseFloat(item.data_purchase_original_offer_price_value.replace(',', '.'));
-      if (!productRevenue[productName]) {
-        productRevenue[productName] = 0;
+      if (!productStats[productName]) {
+        productStats[productName] = { revenue: 0, count: 0 };
       }
-      productRevenue[productName] += price;
+      productStats[productName].revenue += price;
+      productStats[productName].count += 1;
     });
 
-    return Object.keys(productRevenue)
+    return Object.keys(productStats)
       .map(name => ({
         name: name.substring(0, 25) + (name.length > 25 ? '...' : ''), // shorten long names
-        Receita: productRevenue[name],
+        Receita: productStats[name].revenue,
+        Vendas: productStats[name].count,
       }))
       .sort((a, b) => b.Receita - a.Receita)
       .slice(0, 7); // top 7 products
@@ -37,6 +39,9 @@ export default function ProductSalesChart({ data }: Props) {
     Receita: {
       label: 'Receita',
       color: 'hsl(var(--accent))',
+    },
+     Vendas: {
+      label: 'Vendas',
     },
   };
 
@@ -54,7 +59,12 @@ export default function ProductSalesChart({ data }: Props) {
             <Tooltip
               cursor={false}
               content={<ChartTooltipContent
-                formatter={(value) => formatCurrencyBRL(value as number)}
+                formatter={(value, name) => {
+                  if (name === "Receita") {
+                    return `${formatCurrencyBRL(value as number)}`
+                  }
+                  return `${value} vendas`
+                }}
                 indicator="dot"
               />}
             />
