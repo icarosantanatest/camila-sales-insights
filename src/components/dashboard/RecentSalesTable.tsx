@@ -21,9 +21,13 @@ type Props = {
 export default function RecentSalesTable({ data }: Props) {
   const recentSales = data
     .sort((a, b) => {
-        const dateA = parse(a.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).getTime();
-        const dateB = parse(b.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).getTime();
-        return dateB - dateA;
+        try {
+          const dateA = parse(a.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).getTime();
+          const dateB = parse(b.timestamp_incoming_webhook, 'dd/MM/yyyy HH:mm:ss', new Date()).getTime();
+          return dateB - dateA;
+        } catch(e) {
+            return 0;
+        }
     })
     .slice(0, 10);
 
@@ -44,8 +48,8 @@ export default function RecentSalesTable({ data }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recentSales.map((sale) => (
-              <TableRow key={sale.id}>
+            {recentSales.map((sale, index) => (
+              <TableRow key={`${sale.id}-${index}`}>
                 <TableCell>
                   <div className="font-medium">{sale.data_buyer_name}</div>
                   <div className="hidden text-sm text-muted-foreground md:inline">
