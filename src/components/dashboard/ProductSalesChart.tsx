@@ -59,11 +59,16 @@ export default function ProductSalesChart({ data }: Props) {
             <Tooltip
               cursor={false}
               content={<ChartTooltipContent
-                formatter={(value, name) => {
-                  if (name === "Receita") {
-                    return `${formatCurrencyBRL(value as number)}`
+                formatter={(value, name, item) => {
+                  if (name === 'Receita') {
+                    return (
+                      <div className="flex flex-col">
+                        <span>Receita: {formatCurrencyBRL(item.payload.Receita as number)}</span>
+                        <span>Vendas: {item.payload.Vendas}</span>
+                      </div>
+                    )
                   }
-                  return `${value} vendas`
+                  return null
                 }}
                 indicator="dot"
               />}
