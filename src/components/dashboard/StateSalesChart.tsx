@@ -15,13 +15,16 @@ export default function StateSalesChart({ data }: Props) {
     const stateStats: { [key: string]: number } = {};
 
     data.forEach(item => {
-      const state = item.data_buyer_address_state;
-      if (state && state.trim() !== '') {
-        if (!stateStats[state]) {
-          stateStats[state] = 0;
-        }
-        stateStats[state]++;
+      let state = item.data_buyer_address_state;
+      
+      if (!state || state.trim() === '' || state.trim().toUpperCase() === 'XX') {
+          state = 'N/A';
       }
+
+      if (!stateStats[state]) {
+        stateStats[state] = 0;
+      }
+      stateStats[state]++;
     });
 
     return Object.keys(stateStats)
