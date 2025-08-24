@@ -75,7 +75,7 @@ export default function Dashboard({ data }: Props) {
     );
     
     approvedEvents.forEach(item => {
-      totalRevenue += parseFloat(item.data_purchase_full_price_value?.replace(',', '.')) || 0;
+      totalRevenue += parseFloat(item.data_purchase_original_offer_price_value?.replace(',', '.')) || 0;
       netRevenue += parseFloat(item.data_commissions_1_value?.replace(',', '.')) || 0;
       totalSales++;
     });
