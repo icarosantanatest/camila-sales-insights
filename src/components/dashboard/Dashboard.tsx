@@ -12,6 +12,7 @@ import RevenueChart from './RevenueChart';
 import RecentSalesTable from './RecentSalesTable';
 import ProductSalesChart from './ProductSalesChart';
 import PaymentMethodChart from './PaymentMethodChart';
+import StateSalesChart from './StateSalesChart';
 import { formatCurrencyBRL } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
 
@@ -33,7 +34,9 @@ export default function Dashboard({ data }: Props) {
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
-      if (!item.timestamp_incoming_webhook) {
+      // Basic check for a valid-looking timestamp.
+      // This regex checks for dd/mm/yyyy hh:mm:ss format.
+      if (!item.timestamp_incoming_webhook || !/^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(item.timestamp_incoming_webhook)) {
         return false;
       }
       try {
@@ -47,7 +50,7 @@ export default function Dashboard({ data }: Props) {
         
         return isDateInRange && isProductMatch;
       } catch (error) {
-        console.error("Error parsing date:", item.timestamp_incoming_webhook);
+        console.error("Error parsing date:", item.timestamp_incoming_webhook, error);
         return false;
       }
     });
@@ -66,19 +69,20 @@ export default function Dashboard({ data }: Props) {
     let totalRefundAmount = 0;
     let totalRefundCount = 0;
 
-    const approvedData = filteredData.filter(item => 
-      ['APPROVED', 'COMPLETED'].includes(item.data_purchase_status)
+    const approvedEvents = filteredData.filter(item => 
+      ['APPROVED', 'COMPLETED'].includes(item.event) ||
+      (item.event === 'PURCHASE_APPROVED' || item.event === 'PURCHASE_COMPLETED')
     );
-
-    approvedData.forEach(item => {
-      totalRevenue += parseFloat(item.data_purchase_full_price_value.replace(',', '.')) || 0;
-      netRevenue += parseFloat(item.data_commissions_1_value.replace(',', '.')) || 0;
+    
+    approvedEvents.forEach(item => {
+      totalRevenue += parseFloat(item.data_purchase_full_price_value?.replace(',', '.')) || 0;
+      netRevenue += parseFloat(item.data_commissions_1_value?.replace(',', '.')) || 0;
       totalSales++;
     });
     
     const refundedEvents = filteredData.filter(item => item.event === 'PURCHASE_REFUNDED');
     refundedEvents.forEach(item => {
-      totalRefundAmount += parseFloat(item.data_purchase_full_price_value.replace(',', '.')) || 0;
+      totalRefundAmount += parseFloat(item.data_purchase_full_price_value?.replace(',', '.')) || 0;
       totalRefundCount++;
     });
 
@@ -92,7 +96,10 @@ export default function Dashboard({ data }: Props) {
   }, [filteredData]);
 
   const salesEvents = useMemo(() => {
-      return filteredData.filter(item => ['APPROVED', 'COMPLETED'].includes(item.data_purchase_status));
+      return filteredData.filter(item => 
+        ['APPROVED', 'COMPLETED'].includes(item.event) ||
+        (item.event === 'PURCHASE_APPROVED' || item.event === 'PURCHASE_COMPLETED')
+      );
   }, [filteredData]);
 
   const handleRefresh = () => {
@@ -128,9 +135,10 @@ export default function Dashboard({ data }: Props) {
             <KpiCard title="Total de Reembolso" value={formatCurrencyBRL(totalRefundAmount)} icon={AlertCircle} description={`${totalRefundCount} reembolsos`} />
         </div>
         
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 md:gap-8">
           <ProductSalesChart data={salesEvents} />
           <PaymentMethodChart data={salesEvents} />
+          <StateSalesChart data={salesEvents} />
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:gap-8">

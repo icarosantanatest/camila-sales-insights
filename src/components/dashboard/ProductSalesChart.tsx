@@ -17,7 +17,9 @@ export default function ProductSalesChart({ data }: Props) {
 
     data.forEach(item => {
       const productName = item.data_product_name;
-      const price = parseFloat(item.data_purchase_original_offer_price_value.replace(',', '.'));
+      if (!productName) return;
+      
+      const price = parseFloat(item.data_purchase_original_offer_price_value?.replace(',', '.')) || 0;
       if (!productStats[productName]) {
         productStats[productName] = { revenue: 0, count: 0 };
       }
@@ -28,6 +30,7 @@ export default function ProductSalesChart({ data }: Props) {
     return Object.keys(productStats)
       .map(name => ({
         name: name.substring(0, 25) + (name.length > 25 ? '...' : ''), // shorten long names
+        fullName: name,
         Receita: productStats[name].revenue,
         Vendas: productStats[name].count,
       }))
@@ -49,26 +52,29 @@ export default function ProductSalesChart({ data }: Props) {
     <Card className="shadow-md transition-all hover:shadow-lg">
       <CardHeader>
         <CardTitle>Vendas por Produto</CardTitle>
-        <CardDescription>Receita gerada pelos produtos mais vendidos.</CardDescription>
+        <CardDescription>Receita e quantidade dos produtos mais vendidos.</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
-          <BarChart layout="vertical" data={chartData}>
+          <BarChart layout="vertical" data={chartData} margin={{ left: 50 }}>
             <XAxis type="number" hide />
-            <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={8} width={150} />
+            <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={8} width={100} />
             <Tooltip
               cursor={false}
               content={<ChartTooltipContent
                 formatter={(value, name, item) => {
-                  if (name === 'Receita') {
-                    return (
-                      <div className="flex flex-col">
-                        <span>Receita: {formatCurrencyBRL(item.payload.Receita as number)}</span>
-                        <span>Vendas: {item.payload.Vendas}</span>
-                      </div>
-                    )
-                  }
-                  return null
+                  const { fullName, Receita, Vendas } = item.payload;
+                  return (
+                    <div className="flex flex-col gap-1 text-sm">
+                       <div className="font-bold">{fullName}</div>
+                       <div>
+                         <span className="font-medium">Receita:</span> {formatCurrencyBRL(Receita as number)}
+                       </div>
+                       <div>
+                         <span className="font-medium">Vendas:</span> {Vendas}
+                       </div>
+                    </div>
+                  )
                 }}
                 indicator="dot"
               />}
