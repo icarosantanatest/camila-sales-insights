@@ -1,72 +1,78 @@
 "use client"
 
 import { useMemo } from 'react';
-import { Pie, PieChart, Tooltip, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import type { SalesData } from '@/lib/types';
+import { formatCurrencyBRL } from '@/lib/helpers';
 
 type Props = {
   data: SalesData[];
 };
 
-const chartColors = [
-    'hsl(var(--chart-1))',
-    'hsl(var(--chart-2))',
-    'hsl(var(--chart-3))',
-    'hsl(var(--chart-4))',
-    'hsl(var(--chart-5))',
-];
-
 export default function SalesOriginChart({ data }: Props) {
-  const { chartData, chartConfig } = useMemo(() => {
-    const originCounts: { [key: string]: number } = {};
+  const tableData = useMemo(() => {
+    const originStats: { [key: string]: { quantity: number; revenue: number } } = {};
+    
     data.forEach(item => {
       const origin = item.data_purchase_origin_sck || 'N/A';
-      if (!originCounts[origin]) {
-        originCounts[origin] = 0;
+      const price = parseFloat(item.data_purchase_original_offer_price_value?.replace(',', '.')) || 0;
+
+      if (!originStats[origin]) {
+        originStats[origin] = { quantity: 0, revenue: 0 };
       }
-      originCounts[origin]++;
+      originStats[origin].quantity++;
+      originStats[origin].revenue += price;
     });
     
-    const formattedData = Object.keys(originCounts).map((name, index) => ({
-      name,
-      value: originCounts[name],
-      fill: chartColors[index % chartColors.length]
-    }));
-
-    const config = formattedData.reduce((acc, item) => {
-        acc[item.name] = { label: item.name, color: item.fill };
-        return acc;
-    }, {});
-    
-    return { chartData: formattedData, chartConfig: config };
+    return Object.keys(originStats)
+      .map(origin => ({
+        origin,
+        quantity: originStats[origin].quantity,
+        revenue: originStats[origin].revenue,
+      }))
+      .sort((a, b) => b.revenue - a.revenue);
   }, [data]);
 
   return (
     <Card className="shadow-md transition-all hover:shadow-lg">
       <CardHeader>
         <CardTitle>Origem das Vendas</CardTitle>
-        <CardDescription>Distribuição de vendas por origem.</CardDescription>
+        <CardDescription>Quantidade e faturamento por canal de venda.</CardDescription>
       </CardHeader>
-      <CardContent className="flex items-center justify-center">
-        <ChartContainer config={chartConfig} className="h-[250px] w-full">
-          <PieChart>
-            <Tooltip
-              cursor={false}
-              content={<ChartTooltipContent
-                hideLabel
-                formatter={(value, name) => `${name}: ${value}`}
-              />}
-            />
-            <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={80} paddingAngle={5}>
-                {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-            </Pie>
-            <ChartLegend content={<ChartLegendContent />} />
-          </PieChart>
-        </ChartContainer>
+      <CardContent className="h-[250px] overflow-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Origem</TableHead>
+              <TableHead className="text-center">Quantidade</TableHead>
+              <TableHead className="text-right">Faturamento</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tableData.map(({ origin, quantity, revenue }) => (
+              <TableRow key={origin}>
+                <TableCell className="font-medium">{origin}</TableCell>
+                <TableCell className="text-center">{quantity}</TableCell>
+                <TableCell className="text-right">{formatCurrencyBRL(revenue)}</TableCell>
+              </TableRow>
+            ))}
+             {tableData.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-muted-foreground">
+                  Nenhuma origem encontrada.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
