@@ -11,7 +11,7 @@ import KpiCard from './KpiCard';
 import RevenueChart from './RevenueChart';
 import RecentSalesTable from './RecentSalesTable';
 import ProductSalesChart from './ProductSalesChart';
-import PaymentMethodChart from './PaymentMethodChart';
+import SalesOriginChart from './SalesOriginChart';
 import StateSalesChart from './StateSalesChart';
 import { formatCurrencyBRL } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
@@ -137,7 +137,7 @@ export default function Dashboard({ data }: Props) {
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 md:gap-8">
           <ProductSalesChart data={salesEvents} />
-          <PaymentMethodChart data={salesEvents} />
+          <SalesOriginChart data={salesEvents} />
           <StateSalesChart data={salesEvents} />
         </div>
 

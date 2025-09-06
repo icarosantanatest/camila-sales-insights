@@ -18,20 +18,20 @@ const chartColors = [
     'hsl(var(--chart-5))',
 ];
 
-export default function PaymentMethodChart({ data }: Props) {
+export default function SalesOriginChart({ data }: Props) {
   const { chartData, chartConfig } = useMemo(() => {
-    const paymentCounts: { [key: string]: number } = {};
+    const originCounts: { [key: string]: number } = {};
     data.forEach(item => {
-      const paymentType = item.data_purchase_payment_type;
-      if (!paymentCounts[paymentType]) {
-        paymentCounts[paymentType] = 0;
+      const origin = item.data_purchase_origin_sck || 'N/A';
+      if (!originCounts[origin]) {
+        originCounts[origin] = 0;
       }
-      paymentCounts[paymentType]++;
+      originCounts[origin]++;
     });
     
-    const formattedData = Object.keys(paymentCounts).map((name, index) => ({
+    const formattedData = Object.keys(originCounts).map((name, index) => ({
       name,
-      value: paymentCounts[name],
+      value: originCounts[name],
       fill: chartColors[index % chartColors.length]
     }));
 
@@ -46,8 +46,8 @@ export default function PaymentMethodChart({ data }: Props) {
   return (
     <Card className="shadow-md transition-all hover:shadow-lg">
       <CardHeader>
-        <CardTitle>Métodos de Pagamento</CardTitle>
-        <CardDescription>Distribuição de vendas por tipo de pagamento.</CardDescription>
+        <CardTitle>Origem das Vendas</CardTitle>
+        <CardDescription>Distribuição de vendas por origem.</CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center">
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
