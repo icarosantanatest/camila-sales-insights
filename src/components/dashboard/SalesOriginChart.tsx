@@ -22,7 +22,7 @@ export default function SalesOriginChart({ data }: Props) {
     const originStats: { [key: string]: { quantity: number; revenue: number } } = {};
     
     data.forEach(item => {
-      const origin = item.data_purchase_origin_sck || 'N/A';
+      const origin = (item.data_purchase_origin_sck || 'N/A').toLowerCase();
       const price = parseFloat(item.data_purchase_original_offer_price_value?.replace(',', '.')) || 0;
 
       if (!originStats[origin]) {
@@ -59,7 +59,7 @@ export default function SalesOriginChart({ data }: Props) {
           <TableBody>
             {tableData.map(({ origin, quantity, revenue }) => (
               <TableRow key={origin}>
-                <TableCell className="font-medium">{origin}</TableCell>
+                <TableCell className="font-medium capitalize">{origin}</TableCell>
                 <TableCell className="text-center">{quantity}</TableCell>
                 <TableCell className="text-right">{formatCurrencyBRL(revenue)}</TableCell>
               </TableRow>
