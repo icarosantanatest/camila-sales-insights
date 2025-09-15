@@ -52,6 +52,7 @@ export default function RecentSalesTable({ data }: Props) {
             <TableRow>
               <TableHead className="w-[140px]">Data e Hora</TableHead>
               <TableHead>Cliente</TableHead>
+              <TableHead className="hidden md:table-cell">Produto</TableHead>
               <TableHead className="hidden sm:table-cell">Origem</TableHead>
               <TableHead className="text-right">Valor</TableHead>
             </TableRow>
@@ -68,6 +69,7 @@ export default function RecentSalesTable({ data }: Props) {
                     {sale.data_buyer_email}
                   </div>
                 </TableCell>
+                <TableCell className="hidden md:table-cell">{sale.data_product_name}</TableCell>
                 <TableCell className="hidden sm:table-cell">
                    <Badge variant="outline" className="capitalize">
                       {(sale.data_purchase_origin_sck || 'N/A').toLowerCase()}
@@ -78,7 +80,7 @@ export default function RecentSalesTable({ data }: Props) {
             ))}
              {recentSales.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
+                <TableCell colSpan={5} className="text-center text-muted-foreground">
                   Nenhuma venda recente encontrada.
                 </TableCell>
               </TableRow>
